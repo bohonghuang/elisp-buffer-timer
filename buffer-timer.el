@@ -1260,28 +1260,4 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (setq buffer-timer-idle-timer-list nil)
   (message "buffer-timer exiting"))
 
-(defun buffer-timer-init ()
-  (interactive)
-  (buffer-timer-start)
-  
-  ;; reporting
-  (global-set-key "\C-cts" 'buffer-timer-summarize)
-  (global-set-key "\C-ctr" 'buffer-timer-report)
-  (global-set-key "\C-ctS" 'buffer-timer-write-results)
-  (global-set-key "\C-ctc" 'buffer-timer-clear)
-  (global-set-key "\C-ctm" 'buffer-timer-munge)
-  (global-set-key "\C-ctM" 'buffer-timer-munge-date-range)
-  
-  ;; modifying data
-  (global-set-key "\C-ctt" 'buffer-timer-transfer-time)
-  (global-set-key "\C-cta" 'buffer-timer-adjust-time)
-  (global-set-key "\C-ctA" 'buffer-timer-adjust-older-time)
-  
-  ;; locking to a subject
-  (global-set-key "\C-cti" 'buffer-timer-toggle-idle)
-  (global-set-key "\C-ctl" 'buffer-timer-lock)
-  (global-set-key "\C-ctu" 'buffer-timer-unlock)
-  (global-set-key "\C-ctU" 'buffer-timer-do-idle-calculations)
-  (global-set-key "\C-ctL" 'buffer-timer-view-log))
-
 (provide 'buffer-timer)
