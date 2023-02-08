@@ -676,7 +676,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
      t))
   (buffer-timer-switch-all-windows-to-nolonger-idle))
 
-(defun buffer-timer-do-idle-generic (button)
+(defun buffer-timer-do-idle-generic (_button)
   (message "here")
   (call-interactively 'buffer-timer-transfer-time))
 
@@ -706,14 +706,11 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (interactive)
   (erase-buffer)
   (insert "You've gone idle! Do you want to:\n\n")
-  (let ((here (point)) 
-        (frequent buffer-timer-frequent-topic-list)
+  (let ((frequent buffer-timer-frequent-topic-list)
         (frequent2 buffer-timer-recent-transfer-list)
         (lastbuf (buffer-name (other-buffer)))
         (bufferlist (buffer-list))
-        (count 0)
-        newext)
-
+        (count 0))
     (if buffer-timer-locked
         (progn
           (insert "\t")
@@ -741,14 +738,9 @@ every `buffer-timer-do-early-idle-count' times this function is called."
       (buffer-timer-section-header "\n\nTransfer idle time to your frequent list:\n\n")
       (while frequent
         (while frequent
-          (let* ((thesymbol (car frequent))
-                 (label (if (symbolp (car frequent))
+          (let* ((label (if (symbolp (car frequent))
                             (symbol-name (car frequent) )
-                          (car frequent)))
-                 (thestring (concat "\tApply current idle time to \"" 
-                                    label
-                                    "\"\n")))
-
+                          (car frequent))))
             (buffer-timer-insert-transfer-buttons label)
             (setq frequent (cdr frequent))))
         (when frequent2
@@ -771,7 +763,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
                           'follow-link t)
       (insert "\n\n(buffer-timer-idle-message)\n"))))
 
-(defun buffer-timer-go-idle-button (button)
+(defun buffer-timer-go-idle-button (_button)
   "Use a button to switch out of idle mode."
   (buffer-timer-go-idle))
 
@@ -844,11 +836,11 @@ every `buffer-timer-do-early-idle-count' times this function is called."
           (unless (window-dedicated-p window)
             (set-window-buffer window buffer-timer-idle-buffer)))))))
 
-(defun buffer-timer-switch-all-windows-to-nolonger-idle (&optional notusedbutton)
+(defun buffer-timer-switch-all-windows-to-nolonger-idle (&optional _notusedbutton)
   "Restore frame states from the last switch to idle."
   (set-frame-configuration buffer-timer-last-frame-configurations))
 
-(defun buffer-timer-toggle-idle-button (button)
+(defun buffer-timer-toggle-idle-button (_button)
   "Switch to or from the idle buffer via button."
   (interactive)
   (buffer-timer-toggle-idle))
@@ -870,7 +862,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
 (defvar buffer-timer-old-extent nil)
 
 ;;; easy to use functions
-(defun buffer-timer-idle-switch (&rest args)
+(defun buffer-timer-idle-switch (&rest _args)
   "When switching buffers this detects the switch after 1 second and..."
   (let ((newname (buffer-timer-get-current-buffer-string)))
     (if (and
@@ -935,7 +927,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (make-sparse-keymap "buffer-timer-idle-button-keys")
   "Keymap to apply transforms.")
 
-(defun buffer-timer-make-invis-button (ext &optional subregionext startinvis keymap help pt1 pt2 sub1 sub2)
+(defun buffer-timer-make-invis-button (ext &optional subregionext startinvis keymap help _pt1 _pt2 _sub1 _sub2)
   (if startinvis
       (overlay-put subregionext 'invisible t))
   (let ((mykeymap (or keymap buffer-timer-munge-map))
@@ -956,7 +948,6 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (interactive "e")
   (let* ((ext nil)
          (pt (posn-point (event-end event)))
-         (props (text-properties-at pt))
          (subregion nil)
          (overlays (if pt (overlays-at pt))))
     (if (not ext)
@@ -1102,7 +1093,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
       ;; insert a date stamp
       (insert (format-time-string "\nDate: %Y-%m-%d %a\n" date))
       (let ((filename 
-             (format-time-string (concat buffer-timer-output-file ".el")
+             (format-time-string (concat buffer-timer-file ".el")
                                  date)))
                                         ; (insert (format "File (%d): %s\n" daychgone filename))
         (if (file-exists-p filename)
@@ -1148,7 +1139,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
       (setq master (cdr master)))
     ret))
 
-(defun buffer-timer-find-munge-chain (search-for &optional master listtot)
+(defun buffer-timer-find-munge-chain (search-for &optional master _listtot)
   (interactive)
   (let* ((master (or master (buffer-timer-generate-munged)))
          ret)
@@ -1197,7 +1188,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (setq mode-name "Munge")
   (setq major-mode 'buffer-timer-munge-mode))
 
-(defun buffer-timer-is-locked-p (&rest list)
+(defun buffer-timer-is-locked-p (&rest _list)
   "Are we currently locked?"
   buffer-timer-locked)
 
