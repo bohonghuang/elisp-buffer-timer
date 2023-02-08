@@ -833,7 +833,8 @@ every `buffer-timer-do-early-idle-count' times this function is called."
     (dolist (frame frames)
       (let ((windows (window-list frame)))
         (dolist (window windows)
-          (set-window-buffer window buffer-timer-idle-buffer))))))
+          (unless (window-dedicated-p window)
+            (set-window-buffer window buffer-timer-idle-buffer)))))))
 
 (defun buffer-timer-switch-all-windows-to-nolonger-idle (&optional notusedbutton)
   "Restore frame states from the last switch to idle."
