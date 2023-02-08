@@ -1,4 +1,4 @@
-;;; buffer-timer.el --- Track your time based on the buffers you edit.
+;;; buffer-timer.el --- Track your time based on the buffers you edit. -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2002-2004  Wes Hardaker <elisp@hardakers.net>
 ;;
@@ -17,6 +17,14 @@
 ;; from the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA
 ;; 02139, USA.
 ;;
+
+;;; Commentary:
+
+;; Keeps track of time you spend in each buffer in emacs and summarizes your time spent.
+
+;;; Code:
+
+;;;; Libraries
 
 (require 'cl-lib)
 (require 'gnus-spec)
