@@ -872,7 +872,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
     (dolist (frame frames)
       (let ((windows (window-list frame)))
         (dolist (window windows)
-          (unless (window-dedicated-p window)
+          (unless (or (window-dedicated-p window) (window-minibuffer-p window))
             (set-window-buffer window buffer-timer-idle-buffer)))))))
 
 (defun buffer-timer-switch-all-windows-to-nolonger-idle (&optional _notusedbutton)
