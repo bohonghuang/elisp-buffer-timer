@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; Keeps track of time you spend in each buffer in emacs and summarizes your time spent.
+;; Keeps track of time you spend in each buffer in Emacs and summarizes your time spent.
 
 ;;; Code:
 
@@ -32,7 +32,6 @@
 ;;
 ;; user setable variables
 ;;
-
 (defvar buffer-timer-idle-limit 300
   "The amount of time to wait for user input
 before switching to the `buffer-timer-idle-buffer' buffer.")
@@ -150,11 +149,10 @@ Swiched to after `buffer-timer-idle-limit' seconds.")
 (defvar buffer-timer-do-warnings nil)
 (defvar buffer-timer-locked nil)
 (defvar buffer-timer-debug 'file)
-(defvar buffer-timer-debug-file (expand-file-name ".buffer-timer-log" user-emacs-directory))
 (defvar buffer-timer-debug-buffer "*buffer-timer-log*")
 (defvar buffer-timer-debug-buf nil)
-(defvar buffer-timer-last-file-name nil)
-(defvar buffer-timer-last-outputfile-name nil)
+(defvar buffer-timer-last-visit-file-name nil)
+(defvar buffer-timer-last-output-file nil)
 (defvar buffer-timer-data nil)
 (defvar buffer-timer-backup-data nil)
 (defvar buffer-timer-start-time (current-time))
@@ -213,10 +211,8 @@ Swiched to after `buffer-timer-idle-limit' seconds.")
   "Return a real 32 bit time value."
   (buffer-timer-convert-time (current-time)))
 
-(setq buffer-timer-switch-time (buffer-timer-current-time))
-(setq buffer-timer-last-file-name (buffer-timer-get-current-buffer-string))
-
 (defvar buffer-timer-recursive-watch nil)
+
 (defun buffer-timer-debug-msg (msg)
   (if buffer-timer-debug
       (save-excursion
@@ -228,7 +224,7 @@ Swiched to after `buffer-timer-idle-limit' seconds.")
                     (if (eq buffer-timer-debug 'file)
                         (setq buffer-timer-debug-buf
                               (find-file-noselect 
-                               (format-time-string buffer-timer-debug-file)))
+                               (format-time-string (concat buffer-timer-output-file ".log"))))
                       (setq buffer-timer-debug-buf 
                             (get-buffer-create buffer-timer-debug-buffer)))
                     (set-buffer buffer-timer-debug-buf)
@@ -401,9 +397,14 @@ Swiched to after `buffer-timer-idle-limit' seconds.")
          (newname (format-time-string inputfilename)))
     (if buffer-timer-clear-data-on-filename-change
         (progn
-          (if (not (equal buffer-timer-last-outputfile-name newname))
-              (buffer-timer-clear))
-          (setq buffer-timer-last-outputfile-name newname)))
+          (when (not (equal buffer-timer-last-output-file newname))
+            (buffer-timer-clear)
+            (when buffer-timer-debug-buf
+              (with-current-buffer buffer-timer-debug-buf
+                (save-buffer))
+              (kill-buffer buffer-timer-debug-buf)
+              (setq buffer-timer-debug-buf nil)))
+          (setq buffer-timer-last-output-file newname)))
     newname))
 
 (defun buffer-timer-write-text-results ()
@@ -803,8 +804,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
                                             buffer-timer-switch-time subtracttime))
                   (buffer-timer-remember buffer-timer-idle-buffer subtracttime))
                  ;; exactly equal. Only the idle timer is incremented.
-                 (t
-                  (buffer-timer-remember buffer-timer-idle-buffer subtracttime)))
+                 (t (buffer-timer-remember buffer-timer-idle-buffer subtracttime)))
                 ;; zero the switch time so we don't record anything about the
                 ;; past X amount of time.
                 (setq buffer-timer-switch-time (buffer-timer-current-time)))))
@@ -816,8 +816,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
 
         (if flyspell-mode
             (flyspell-mode-off))
-                                        ; (setq buffer-timer-last-file-name buffer-timer-idle-buffer)
-        (setq buffer-timer-last-file-name "*idle-2*")
+        (setq buffer-timer-last-visit-file-name "*idle-2*")
         (if buffer-timer-do-idle-buttons
             (buffer-timer-idle-message)))))
 
@@ -867,11 +866,11 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (let ((newname (buffer-timer-get-current-buffer-string)))
     (if (and
          (not buffer-timer-locked)
-         (not (eq newname buffer-timer-last-file-name)))
+         (not (eq newname buffer-timer-last-visit-file-name)))
         (progn
-          ;;(message (format "remembering: %s -> %s" buffer-timer-last-file-name newname))
-          (buffer-timer-remember buffer-timer-last-file-name)
-          (setq buffer-timer-last-file-name newname)))))
+          ;;(message (format "remembering: %s -> %s" buffer-timer-last-visit-file-name newname))
+          (buffer-timer-remember buffer-timer-last-visit-file-name)
+          (setq buffer-timer-last-visit-file-name newname)))))
 
 (defun buffer-timer-lock (lockto)
   (interactive
@@ -1093,7 +1092,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
       ;; insert a date stamp
       (insert (format-time-string "\nDate: %Y-%m-%d %a\n" date))
       (let ((filename 
-             (format-time-string (concat buffer-timer-file ".el")
+             (format-time-string (concat buffer-timer-output-file ".el")
                                  date)))
                                         ; (insert (format "File (%d): %s\n" daychgone filename))
         (if (file-exists-p filename)
@@ -1206,7 +1205,6 @@ every `buffer-timer-do-early-idle-count' times this function is called."
 (defun buffer-timer-start ()
   "Turn on the buffer timer."
   (interactive)
-
   ;;
   ;; maybe load previous data set
   ;;
@@ -1217,6 +1215,9 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   ;;
   ;; note when we go idle for too long
   ;;
+  (setq buffer-timer-switch-time (buffer-timer-current-time)
+        buffer-timer-last-visit-file-name (buffer-timer-get-current-buffer-string))
+  
   (add-to-list 'buffer-timer-idle-timer-list
                (run-with-idle-timer buffer-timer-idle-limit t 
                                     'buffer-timer-go-idle buffer-timer-idle-limit))
