@@ -32,46 +32,66 @@
 ;;
 ;; user setable variables
 ;;
-(defvar buffer-timer-idle-limit 300
+(defcustom buffer-timer-idle-limit 300
   "The amount of time to wait for user input
-before switching to the `buffer-timer-idle-buffer' buffer.")
+before switching to the `buffer-timer-idle-buffer' buffer."
+  :type 'number
+  :group 'buffer-timer)
 
-(defvar buffer-timer-output-file (expand-file-name ".buffer-timer" user-emacs-directory)
+(defcustom buffer-timer-output-file (expand-file-name ".buffer-timer" user-emacs-directory)
   "The location to store buffer-timer data.
 Will get formated using `format-time-string',
 so date specifications (like file-%Y-%m-%d) will
-work.")
+work."
+  :type 'file
+  :group 'buffer-timer)
 
-(defvar buffer-timer-clear-data-on-filename-change t
+(defcustom buffer-timer-clear-data-on-filename-change t
   "If t, clears data from the buffer-timer on a filename change.
 If a date format string is included in the `buffer-timer-output-file' variable
 then the variable name will not be constant. When it changes, this
 variable indicates if the timers data should be cleared for the new time 
-period.")
+period."
+  :type 'boolean
+  :group 'buffer-timer)
 
-(defvar buffer-timer-idle-buffer "*idle*"
+(defcustom buffer-timer-idle-buffer "*idle*"
   "The buffer to switch to when no events have been detected.
-Swiched to after `buffer-timer-idle-limit' seconds.")
+Swiched to after `buffer-timer-idle-limit' seconds."
+  :type 'string
+  :group 'buffer-timer)
 
-(defvar buffer-timer-load-previous t
-  "If t, load the previous existing data file if present.")
+(defcustom buffer-timer-load-previous t
+  "If t, load the previous existing data file if present."
+  :type 'boolean
+  :group 'buffer-timer)
 
-(defvar buffer-timer-summarize-sort-by 'time
-  "Sort reports either by `'time' or by `'name'.")
+(defcustom buffer-timer-summarize-sort-by 'time
+  "Sort reports either by `'time' or by `'name'."
+  :type '(choice (const :tag "Time" time) (const :tag "Name" name))
+  :group 'buffer-timer)
 
-(defvar buffer-timer-save-when-idle t
-  "Whether we should save buffer-timer data every so often automatically.")
+(defcustom buffer-timer-save-when-idle t
+  "Whether we should save buffer-timer data every so often automatically."
+  :type 'boolean
+  :group 'buffer-timer)
 
-(defvar buffer-timer-small-idle-time 1
-  "minimum idle time to wait before saving data")
+(defcustom buffer-timer-small-idle-time 1
+  "Minimum idle time to wait before saving data."
+  :type 'number
+  :group 'buffer-timer)
 
-(defvar buffer-timer-save-every-x-idletimes 5
-  "save data only every `buffer-timer-save-every-x-idletimes' number of idle times.")
+(defcustom buffer-timer-save-every-x-idletimes 5
+  "Save data only every `buffer-timer-save-every-x-idletimes' number of idle times."
+  :type 'number
+  :group 'buffer-timer)
 
-(defvar buffer-timer-rename-always nil
-  "if t, sort/classify the buffer names as they are processed.")
+(defcustom buffer-timer-rename-always nil
+  "If t, sort/classify the buffer names as they are processed."
+  :type 'boolean
+  :group 'buffer-timer)
 
-(defvar buffer-timer-regexp-merge-list
+(defcustom buffer-timer-regexp-merge-list
   '(("^\\*Group\\*" . "news") ; or maybe mail!
     ("^\\*Summary\\*" . "news")
     ("drafts/[0-9]+$" . "news-post")
@@ -80,9 +100,11 @@ Swiched to after `buffer-timer-idle-limit' seconds.")
     ("^\\*compilation\\*" . "compiling")
     ("^\\*" . "emacs-internal")
     ("^ " . "emacs-really-internal"))
-  "A list of (regexp . summary) pairs to make condensed reports from.")
+  "A list of (regexp . summary) pairs to make condensed reports from."
+  :type 'alist
+  :group 'buffer-timer)
 
-(defvar buffer-timer-regexp-master-list
+(defcustom buffer-timer-regexp-master-list
   '(("news" . (("group" . "^\\*Group\\*")
                ("summary" . "^\\*Summary\\*")
                ("out" . "drafts/[0-9]+$")))
@@ -91,25 +113,39 @@ Swiched to after `buffer-timer-idle-limit' seconds.")
     ("compiling" . "^\\*compilation\\*")
     ("emacs" . (("emacs-internal" . "^\\*")
                 ("emacs-really-internal" . "^ "))))
-  "A list of (name . regexp) or (name . ((subname . regexp)...)) type things...")
+  "A list of (name . regexp) or (name . ((subname . regexp)...)) type things..."
+  :type 'alist
+  :group 'buffer-timer)
 
-(defvar buffer-timer-munge-dont-show-zeros t
-  "if t, dont display munge results for zero time matches.")
+(defcustom buffer-timer-munge-dont-show-zeros t
+  "if t, dont display munge results for zero time matches."
+  :type 'boolean
+  :group 'buffer-timer)
 
-(defvar buffer-timer-munge-visible-depth 100
-  "Maximum hierarchial depth to show as visible by default.")
+(defcustom buffer-timer-munge-visible-depth 100
+  "Maximum hierarchial depth to show as visible by default."
+  :type 'integer
+  :group 'buffer-timer)
 
-(defvar buffer-timer-limit-munge t
-  "Whether or not to colapse munge results.")
+(defcustom buffer-timer-limit-munge t
+  "Whether or not to colapse munge results."
+  :type 'boolean
+  :group 'buffer-timer)
 
-(defvar buffer-timer-mouse-face 'highlight
-  "*Face used for mouse highlighting in the summary buffer.")
+(defcustom buffer-timer-mouse-face 'highlight
+  "*Face used for mouse highlighting in the summary buffer."
+  :type 'face
+  :group 'buffer-timer)
 
-(defvar buffer-timer-do-idle-buttons t
-  "Put transfer buttons into the idle buffer for easy switch away.")
+(defcustom buffer-timer-do-idle-buttons t
+  "Put transfer buttons into the idle buffer for easy switch away."
+  :type 'boolean
+  :group 'buffer-timer)
 
-(defvar buffer-timer-frequent-topic-list nil
-  "A list of frequent topics utilized a user of the buffer-timer.")
+(defcustom buffer-timer-frequent-topic-list nil
+  "A list of frequent topics utilized a user of the buffer-timer."
+  :type 'list
+  :group 'buffer-timer)
 
 
 (defface buffer-timer-locked-face '((((class color)
@@ -130,16 +166,20 @@ Swiched to after `buffer-timer-idle-limit' seconds.")
                                      (:foreground "black")))
   "normal face.")
 
-(defvar buffer-timer-gutter-format "%l this: %t")
+(defcustom buffer-timer-recent-transfer-list-max 5
+  "Maximum number of recent tranfsers to keep for buttons in the idle window."
+  :type 'integer
+  :group 'buffer-timer)
 
-(defvar buffer-timer-recent-transfer-list-max 5
-  "Maximum number of recent tranfsers to keep for buttons in the idle window.")
+(defcustom buffer-timer-recent-buffer-max 5
+  "Maximum number of recent buffers to make a button for in the idle window."
+  :type 'integer
+  :group 'buffer-timer)
 
-(defvar buffer-timer-recent-buffer-max 5
-  "Maximum number of recent buffers to make a button for in the idle window.")
-
-(defvar buffer-timer-results-buffer "*buffer-timer-results*"
-  "The buffer name to use when generating reports and summaries.")
+(defcustom buffer-timer-results-buffer "*buffer-timer-results*"
+  "The buffer name to use when generating reports and summaries."
+  :type 'string
+  :group 'buffer-timer)
 
 ;;
 ;; internal variables
@@ -851,14 +891,6 @@ every `buffer-timer-do-early-idle-count' times this function is called."
       ;; switch back to something else
       (buffer-timer-switch-all-windows-to-nolonger-idle)
     (buffer-timer-go-idle subtracttime)))
-
-(defvar buffer-timer-lock-map (let ((map (make-sparse-keymap "buffer-timer-lock-keys")))
-                                (define-key map [mouse-1] 'buffer-timer-unlock)
-                                (define-key map [mouse-2] 'buffer-timer-unlock)
-                                map)
-  "Keymap for gutter.")
-
-(defvar buffer-timer-old-extent nil)
 
 ;;; easy to use functions
 (defun buffer-timer-idle-switch (&rest _args)
