@@ -1253,8 +1253,8 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (interactive)
   (if buffer-timer-locked
       (buffer-timer-unlock))
-  (buffer-timer-write-results)
   (buffer-timer-debug-msg " buffer-timer-stopping\n")
+  (buffer-timer-write-results)
   (dolist (timer-object buffer-timer-idle-timer-list)
     (cancel-timer timer-object))
   (setq buffer-timer-idle-timer-list nil)
