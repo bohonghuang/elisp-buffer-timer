@@ -576,21 +576,21 @@ Swiched to after `buffer-timer-idle-limit' seconds."
   "Convert a string like \"15m 30s\" and \"1h 20s\" to a second count."
   (if (not (string-match "[hsm]" timestr))
       ;; straight seconds, no specfiers
-      (string-to-number timestr)
+      (cl-parse-integer timestr)
     (let ((time 0))
       (if (string-match "\\([0-9]+s\\)" timestr)
-          (setq time (string-to-number
+          (setq time (cl-parse-integer
                       (substring timestr (match-beginning 1) 
                                  (1- (match-end 1))))))
       (if (string-match "\\([0-9]+m\\)" timestr)
           (setq time (+ time
-                        (* 60 (string-to-number
+                        (* 60 (cl-parse-integer
                                (substring timestr 
                                           (match-beginning 1) 
                                           (1- (match-end 1))))))))
       (if (string-match "\\([0-9]+h\\)" timestr)
           (setq time (+ time
-                        (* 3600 (number-to-string
+                        (* 3600 (cl-parse-integer
                                  (substring timestr 
                                             (match-beginning 1) 
                                             (1- (match-end 1))))))))
@@ -1285,3 +1285,4 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (message "buffer-timer exiting"))
 
 (provide 'buffer-timer)
+;;; buffer-timer.el ends here
