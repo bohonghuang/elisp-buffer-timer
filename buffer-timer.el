@@ -916,7 +916,7 @@ every `buffer-timer-do-early-idle-count' times this function is called."
   (buffer-timer-debug-msg (format "locking to %s\n" lockto))
   (buffer-timer-add-to-recent-list lockto))
 
-(defun buffer-timer-unlock ()
+(defun buffer-timer-unlock (&optional _marker)
   (interactive)
   (if buffer-timer-locked
       (let ((time-locked (- (buffer-timer-current-time) 
